@@ -6,6 +6,7 @@ import (
 	"unsafe"
 )
 
+// MarshalBinary implements encoding.BinaryMarshaler.
 func (vm VM) MarshalBinary() (data []byte, err error) {
 	data = make([]byte, 0, len(vm)*8)
 	var u32 [4]byte
@@ -18,10 +19,13 @@ func (vm VM) MarshalBinary() (data []byte, err error) {
 	return data, nil
 }
 
+// ErrBadLength indicates the binary encoding had a bad length
 var ErrBadLength = errors.New("vmops: bad data length")
 
+// ErrCorrupt indicatest the binary encoding was corrupt
 var ErrCorrupt = errors.New("vmops: bad data")
 
+// UnmarshalBinary implements encoding.BinaryUnmarshaler.
 func (vm *VM) UnmarshalBinary(data []byte) error {
 	if len(data)%8 != 0 {
 		return ErrBadLength
@@ -60,6 +64,7 @@ func (vm *VM) UnmarshalBinary(data []byte) error {
 	return nil
 }
 
+// UnmarshalBinaryUnsafe unmarshals a byte slice directly using unsafe.
 func (vm *VM) UnmarshalBinaryUnsafe(data []byte) error {
 	if len(data)%8 != 0 {
 		return ErrBadLength
@@ -68,6 +73,7 @@ func (vm *VM) UnmarshalBinaryUnsafe(data []byte) error {
 	return nil
 }
 
+// MarshalBinaryUnsafe marshals a vm to a byte slice directly using unsafe.
 func (vm VM) MarshalBinaryUnsafe() (data []byte, err error) {
 	ops := ([]Opcode)(vm)
 	return unsafe.Slice((*byte)(unsafe.Pointer(&(ops[0]))), uintptr(len(ops))*unsafe.Sizeof(Opcode{})), nil

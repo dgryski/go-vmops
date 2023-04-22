@@ -1,3 +1,6 @@
+// Package vmops is an interpreter for the vmops output from libfsm.
+//
+// For more information, please see: https://github.com/katef/libfsm
 package vmops
 
 import "unsafe"
@@ -30,13 +33,16 @@ type Opcode struct {
 	Arg int32
 }
 
+// VM is a set of opcodes encoding a DFA matching a regular expression.
 type VM []Opcode
 
+// Match runs the vm against the input string and returns result.
 func (vm VM) MatchString(input string) int {
 	s := unsafe.Slice(unsafe.StringData(input), len(input))
 	return vm.Match(s)
 }
 
+// Match runs the vm against the input byte slice and returns result.
 func (vm VM) Match(input []byte) int {
 	var ip int32
 	var idx = ^uint(0)
